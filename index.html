@@ -37,6 +37,33 @@
             box-shadow: 0 0 50px rgba(0,0,0,1); 
         }
 
+        /* Gömülü Arka Plan (CSS ile yapıldı) */
+        #embedded-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Gece Gökyüzü ve Ay Işığı Efekti */
+            background: radial-gradient(circle at 50% 30%, #1a2a6c, #0d1117 80%);
+            z-index: 1;
+        }
+        /* Yıldızlar için minik noktalar */
+        #embedded-bg::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white 1px, transparent 1px),
+                radial-gradient(white 1px, transparent 1px);
+            background-size: 50px 50px, 100px 100px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.3;
+        }
+
         /* Perdeler */
         .curtain { 
             position: absolute; 
@@ -174,15 +201,15 @@
         <button class="start-button" onclick="launchGame()">OYUNU BAŞLAT</button>
         <div id="mobile-hint">
             DAVULLAR ÇALIYOR!<br>
-            <span style="color: #00ff00;">Ekrana Dokun</span> veya <span style="color: #00ff00;">'S' Tuşuna Bas</span>
+            <span style="color: #fff;">Sahne hazırlanıyor...</span>
         </div>
     </div>
 
-    <div id="theater-frame" onclick="triggerSceneOpening()">
+    <div id="theater-frame">
         <div id="curtain-left" class="curtain"></div>
         <div id="curtain-right" class="curtain"></div>
         
-        <img id="game-bg" src="5. sahne.jpg" style="width:100%; height:100%; object-fit: cover; opacity:0.5;">
+        <div id="embedded-bg"></div>
 
         <div id="quiz-card">
             <h3 id="q-info" style="margin:0; color:#555;">SORU 1/10</h3>
@@ -230,9 +257,15 @@
         document.querySelector('.start-button').style.display = 'none';
         document.getElementById('mobile-hint').style.display = 'block';
         gameReadyToOpen = true;
+
+        // MOBİL DÜZELTME: Butona bastıktan 1.5 saniye sonra sahneyi OTOMATİK aç.
+        // Kullanıcının tekrar tıklamasına gerek kalmadı.
+        setTimeout(() => {
+            triggerSceneOpening();
+        }, 1500);
     }
 
-    // Hem klavye hem dokunma kontrolü
+    // "S" tuşunu yedek olarak tutuyoruz
     window.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 's') triggerSceneOpening();
     });
@@ -263,7 +296,7 @@
             btn.className = 'opt-btn';
             btn.innerText = ans;
             btn.onclick = (e) => {
-                e.stopPropagation(); // Tıklamanın sahne açma fonksiyonunu tetiklemesini önle
+                e.stopPropagation(); 
                 const buttons = document.querySelectorAll('.opt-btn');
                 buttons.forEach(b => b.onclick = null);
 
